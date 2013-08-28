@@ -1,6 +1,6 @@
 {
     "packages": {
-        "fcj/utils": {
+        "fcj/php-utils": {
             "dev-master": { @composer.json },
             "0.1.x-dev": { @composer.json }
         }
