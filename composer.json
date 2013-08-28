@@ -1,0 +1,59 @@
+{
+    "name": "fcj/utils",
+    "description": "fabic's PHP utilities",
+    "type": "library",
+    "homepage": "https://fabic.github.com/",
+    "keywords": [ "PHP", "utilities" ],
+    "license": [ "MIT" ],
+
+    "authors": [
+        { "name": "Fabien CADET", "email": "cadet.fabien@gmail.com", "homepage": "http://RandomBinaryThoughts.com/" }
+    ],
+
+    "version": "0.1.0-dev",
+
+    "minimum-stability": "stable",
+
+    "autoload": {
+        "psr-0": {
+            "Fcj\\": "src/"
+        },
+        "classmap": [],
+        "files": ["src/utils.php"]
+    },
+
+    "include-path": [
+        "lib/"
+    ],
+
+    "require": {
+        "php": ">=5.3.3"
+    },
+
+    "require-dev": {
+        "ccampbell/chromephp" : "dev-master",
+        "firephp/firephp-core" : "dev-master",
+        "apigen/apigen" : "dev-master"
+    },
+
+    "config": {
+        "bin-dir": "bin",
+        "preferred-install": "source"
+    },
+
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1.0-dev"
+        }
+    },
+
+    "scripts": {
+        "post-install-cmd": [
+        ],
+        "post-update-cmd": [
+        ]
+    },
+
+    "repositories": [
+    ]
+}
