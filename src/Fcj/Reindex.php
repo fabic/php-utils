@@ -38,6 +38,7 @@ class Reindex
         $retval = array();
         $path = array_shift($ppaths);
         //$accessor = PropertyAccess::getPropertyAccessor();
+	// TODO: Have it be static so as to avoid multiple instanciation? (such as in Symfony2)
         $accessor = PropertyAccess::createPropertyAccessor();
 
         foreach ($list AS $item) {
