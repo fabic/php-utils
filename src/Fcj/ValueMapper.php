@@ -30,4 +30,28 @@ class ValueMapper
         }
         //var_dump($target, $data, $accessor);
     }
+
+    /** Re-map, initially the purpose was to have a dual of map($target, $data), it ends up being
+     * more general : Maps $source stuff over $target based of an list of (from ; to) pairs defined
+     * as $ppaths (key->value).
+     *
+     * Fixme: map() shall disappear in favor of this one func.
+     *
+     * @param  mixed $source Anything that the PropertyPath component can work with, typically an object or array.
+     * @param  array  $ppaths A mapping of property paths over $source, to property paths over $target.
+     * @param  array  $target Likewise $source, defaults to array().
+     * @return mixed $target.
+     *
+     * Fixme: //public static function remap($source, \Traversable $ppaths, $target = array())
+     */
+    public static function remap($source, array $ppaths, $target = array())
+    {
+        $accessor = PropertyAccess::getPropertyAccessor();
+        foreach($ppaths AS $from => $to) {
+            $to = $to ?: "[$from]";
+            $value = $accessor->getValue($source, $from);
+            $accessor->setValue($target, $to, $value);
+        }
+        return $target;
+    }
 }
