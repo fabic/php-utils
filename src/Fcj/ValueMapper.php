@@ -24,7 +24,7 @@ class ValueMapper
      */
     public static function map($target, $data)
     {
-        $accessor = PropertyAccess::createPropertyAccessor();
+        $accessor = PropertyAccess::getPropertyAccessor();
         foreach($data AS $path => $value) {
             $accessor->setValue($target, $path, $value);
         }
