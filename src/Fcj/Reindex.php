@@ -25,13 +25,14 @@ class Reindex
      * @see http://symfony.com/blog/new-in-symfony-2-2-new-propertyaccess-component
      *
      * @param \Traversable $list A list of things.
-     * @param string ... A list of property paths.
-     * @return array A new list.
+     * @param string|bool ... Eventually, a list of property paths; else if FALSE, $list becomes an array with elements re-indexed starting from 0.
+     * @return array A new list of stuff.
      */
     public static function reindex($list)
     {
         $ppaths = func_get_args();
         array_shift($ppaths);
+
         if (empty($ppaths))
             return $list;
 
@@ -40,15 +41,17 @@ class Reindex
         //$accessor = PropertyAccess::getPropertyAccessor();
         $accessor = PropertyAccess::createPropertyAccessor();
 
+        $i = 0;
         foreach ($list AS $item) {
             //try {
-            $index = $accessor->getValue($item, $path);
+            $index = $path!==false ? $accessor->getValue($item, $path) : $i;
             if ($item instanceOf \Traversable) // FIXME ?
-            $retval[$index] = self::reindex($item, $ppaths);
+                $retval[$index] = self::reindex($item, $ppaths);
             else
                 $retval[$index] = $item;
             //catch($ex) {
             //}
+            $i++;
         }
 
         return $retval;
