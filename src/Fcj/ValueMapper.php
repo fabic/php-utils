@@ -25,10 +25,11 @@ class ValueMapper
     public static function map($target, $data)
     {
         $accessor = PropertyAccess::getPropertyAccessor();
-        foreach($data AS $path => $value) {
+        foreach ($data AS $path => $value) {
             $accessor->setValue($target, $path, $value);
         }
         //var_dump($target, $data, $accessor);
+        return; // todo??
     }
 
     /** Re-map, initially the purpose was to have a dual of map($target, $data), it ends up being
@@ -38,8 +39,8 @@ class ValueMapper
      * Fixme: map() shall disappear in favor of this one func.
      *
      * @param  mixed $source Anything that the PropertyPath component can work with, typically an object or array.
-     * @param  array  $ppaths A mapping of property paths over $source, to property paths over $target.
-     * @param  array  $target Likewise $source, defaults to array().
+     * @param  array $ppaths A mapping of property paths over $source, to property paths over $target.
+     * @param  array $target Likewise $source, defaults to array().
      * @return mixed $target.
      *
      * Fixme: //public static function remap($source, \Traversable $ppaths, $target = array())
@@ -47,8 +48,8 @@ class ValueMapper
     public static function remap($source, array $ppaths, $target = array())
     {
         $accessor = PropertyAccess::getPropertyAccessor();
-        foreach($ppaths AS $from => $to) {
-            $to = $to ?: "[$from]";
+        foreach ($ppaths AS $from => $to) {
+            $to = $to ? : "[$from]";
             $value = $accessor->getValue($source, $from);
             $accessor->setValue($target, $to, $value);
         }

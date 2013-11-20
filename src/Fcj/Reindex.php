@@ -39,13 +39,13 @@ class Reindex
         $retval = array();
         $path = array_shift($ppaths);
         //$accessor = PropertyAccess::getPropertyAccessor();
-	// TODO: Have it be static so as to avoid multiple instanciation? (such as in Symfony2)
+        // TODO: Have it be static so as to avoid multiple instanciation? (such as in Symfony2)
         $accessor = PropertyAccess::createPropertyAccessor();
 
         $i = 0;
         foreach ($list AS $item) {
             //try {
-            $index = $path!==false ? $accessor->getValue($item, $path) : $i;
+            $index = $path !== false ? $accessor->getValue($item, $path) : $i;
             if ($item instanceOf \Traversable) // FIXME ?
                 $retval[$index] = self::reindex($item, $ppaths);
             else
@@ -73,22 +73,22 @@ class Reindex
 /** Ooold impl.
  *
  *
-function array_reindex(Array $a)
-{
-    $keys = func_get_args();
-    array_shift($keys);
-    if (empty($keys))
-        return $a;
-    $retval = array();
-    $k = array_shift($keys);
-    foreach ($a as $b) {
-        if (array_key_exists($k, $b)) {
-            $index = $b[$k];
-            $retval[$index] = call_user_func_array('array_reindex', $keys);
-        } else error_log(__FUNCTION__ . "WARNING: Key '$k' not found!");
-    }
-    return $retval;
-}
+ * function array_reindex(Array $a)
+ * {
+ * $keys = func_get_args();
+ * array_shift($keys);
+ * if (empty($keys))
+ * return $a;
+ * $retval = array();
+ * $k = array_shift($keys);
+ * foreach ($a as $b) {
+ * if (array_key_exists($k, $b)) {
+ * $index = $b[$k];
+ * $retval[$index] = call_user_func_array('array_reindex', $keys);
+ * } else error_log(__FUNCTION__ . "WARNING: Key '$k' not found!");
+ * }
+ * return $retval;
+ * }
 
-*/
+ */
 
