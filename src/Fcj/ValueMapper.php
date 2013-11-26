@@ -6,7 +6,7 @@
 namespace Fcj;
 
 use Symfony\Component\PropertyAccess\PropertyAccess;
-
+use Symfony\Component\PropertyAccess\Exception\ExceptionInterface AS PropertyAccessException;
 
 /** Mapping things to other things.
  *
@@ -54,5 +54,34 @@ class ValueMapper
             $accessor->setValue($target, $to, $value);
         }
         return $target;
+    }
+
+    /** Populate "missing" (made public) properties from object $obj with value $value.
+     *
+     * @param object $obj
+     * @param array $ppaths
+     * @param mixed $value
+     * @return array
+     * @author fabien.cadet@cines.fr
+     */
+    public static function populatePublicProperties($obj, array $ppaths, $value=null)
+    {
+        assert( is_object($obj) );
+        $accessor = PropertyAccess::createPropertyAccessor();
+        $populated = array();
+        foreach ($ppaths AS $from => $to) {
+            $to = $to ? : "[$from]";
+            // Attempt to read *AND* write value :
+            try {
+                $v = $accessor->getValue($obj, $to);
+                $accessor->setValue($obj, $to, $v);
+            }
+            // Whatever we caught => add a property named '$to' set to Null :
+            catch(PropertyAccessException $ex) {
+                $obj->$to = $value;
+                $populated[ $from ] = $to;
+            }
+        }
+        return $populated;
     }
 }
