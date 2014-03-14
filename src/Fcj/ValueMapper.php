@@ -11,6 +11,8 @@ use Symfony\Component\PropertyAccess\Exception\ExceptionInterface AS PropertyAcc
 
 /** Mapping things to other things.
  *
+ * todo/?: sliceObject()? (e.g. for getting rid of proxies).
+ *
  * Class ValueMapper
  * @package Fcj
  */
