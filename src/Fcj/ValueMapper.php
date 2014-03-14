@@ -72,7 +72,11 @@ class ValueMapper
      * @param bool $magics Whether or not to consider the presence of PHP class magics __set / __call as implicit setters, defaults to false.
      * @return mixed $target gets returned.
      */
-    public static function map2($source, $target = array(), array $ppaths = array(), $magics=false)
+    public static function map2(
+        $source, $target = array(),
+        array $ppaths = array(),
+        array $filter = array(),
+        $magics=true)
     {
         $accessor = PropertyAccess::createPropertyAccessor();
         // If no property path mappings list are provided, infer it :
@@ -87,6 +91,7 @@ class ValueMapper
             else {
                 $t = self::getSettableProperties($target, $magics);
                 $u = array_intersect($s, $t);
+                $u = array_diff($u, $filter);
                 $ppaths = array_combine($u, $u);
             }
             unset($s, $t, $u);
