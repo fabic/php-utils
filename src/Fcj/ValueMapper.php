@@ -5,6 +5,7 @@
  */
 namespace Fcj;
 
+use Doctrine\Common\Inflector\Inflector;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\Exception\ExceptionInterface AS PropertyAccessException;
 
@@ -54,6 +55,37 @@ class ValueMapper
             $accessor->setValue($target, $to, $value);
         }
         return $target;
+    }
+
+    /** Retrieve the list of $source object (or array) properties that
+     * are set-able.
+     *
+     * TODO: See if a \Traversable thing would work too.
+     *
+     * @param array|object $source
+     * @return array list<string> of property names (or array keys).
+     */
+    public static function getSettableProperties($source)
+    {
+        $props = array();
+        if (is_array($source)) {
+            $props = array_keys($source);
+        }
+        else if (is_object($source)) {
+            $reflC = new \ReflectionClass($source);
+            // Read the list of properties of it :
+            $props = array_map(function(\ReflectionProperty $p) {
+                return $p->getName();
+            }, $reflC->getProperties());
+            // Filter out properties that do not have setX() :
+            if (!$reflC->hasMethod('__set') && !$reflC->hasMethod('__call')) {
+                $props = array_filter($props, function($p) use ($reflC) {
+                    $setter = 'set' . Inflector::camelize($p);
+                    return $reflC->hasMethod($setter);
+                });
+            }
+        }
+        return $props;
     }
 
     /** Populate "missing" (made public) properties from object $obj with value $value.
