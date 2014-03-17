@@ -47,7 +47,8 @@ class Reindex
             //try {
             $index = $path !== false ? $accessor->getValue($item, $path) : $i;
             if ($item instanceOf \Traversable) // FIXME ?
-                $retval[$index] = self::reindex($item, $ppaths);
+//                $retval[$index] = self::reindex($item, $ppaths);
+                $retval[ $index ] = call_user_func_array(__METHOD__, array($item)+$ppaths);
             else
                 $retval[$index] = $item;
             //catch($ex) {
