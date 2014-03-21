@@ -26,7 +26,7 @@ class Table
      * @throws \RuntimeException
      * @return array The resulting "joined" table.
      */
-    public static function extend($left, $right, $onKey=true, $mapping=array())
+    public static function extend($left, $right, $onKey='', $mapping=array())
     {
         assert(is_array($left)  || $left instanceOf \Traversable);
         assert(is_array($right) || $right instanceOf \ArrayAccess);
@@ -46,7 +46,7 @@ class Table
         // Find out the "column" names in the $right table :
         $rightNulls = !empty($right) ? array_fill_keys(array_keys(reset($right)), null) : null;
 
-        if ($onKey) {
+        if (! $onKey) {
             foreach ($left AS $kl => $rl) {
                 // Lookup a matching row in $right with key $kl :
                 if (isset($right[$kl]))
@@ -70,5 +70,34 @@ class Table
                 . __METHOD__ .':'.__LINE__);
 
         return $rows;
+    }
+
+    /** Extend multiple arrays (passed as list $arrays).
+     *
+     * Basically this calls @see extend() in turn, joining arrays two-by-two.
+     *
+     * @param array|\Traversable $arrays A list of arrays that are to be extended.
+     * @param bool $onKey
+     * @param array $mapping
+     * @return array|mixed
+     */
+    public static function extendMultiple($arrays, $onKey='', $mapping=array())
+    {
+        assert(is_array($arrays) || $arrays instanceOf \Traversable);
+
+        if ($arrays instanceOf \Traversable)
+            $arrays = iterator_to_array($arrays).
+
+        usort($arrays, function($l, $r) {
+            return count($r) - count($l);
+        });
+
+        reset($arrays);
+        $left  = current($arrays);
+
+        while($right = next($arrays))
+            $left = self::extend($left, $right, $onKey, $mapping);
+
+        return $left;
     }
 } 
