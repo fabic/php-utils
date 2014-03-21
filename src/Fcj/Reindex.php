@@ -46,11 +46,15 @@ class Reindex
         foreach ($list AS $item) {
             //try {
             $index = $path !== false ? $accessor->getValue($item, $path) : $i;
-            if ($item instanceOf \Traversable) // FIXME ?
+            if (is_array($item) || $item instanceOf \Traversable) { // FIXME ?
 //                $retval[$index] = self::reindex($item, $ppaths);
-                $retval[ $index ] = call_user_func_array(__METHOD__, array($item)+$ppaths);
-            else
+                $retval[ $index ] = call_user_func_array(__METHOD__, array_merge(array($item), $ppaths));
+                ;
+            }
+            else {
                 $retval[$index] = $item;
+                ;
+            }
             //catch($ex) {
             //}
             $i++;
