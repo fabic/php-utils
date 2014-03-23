@@ -72,6 +72,15 @@ class Table
         return $rows;
     }
 
+    public static function extendMap($left, $right, $onKey='', $mapping = array())
+    {
+        $rr = reset($right);
+        $onKey = is_array($rr) ? "[$onKey]" : $onKey;
+        $right = Reindex::reindex($right, $onKey);
+
+        return $right;
+    }
+
     /** Extend multiple arrays (passed as list $arrays).
      *
      * Basically this calls @see extend() in turn, joining arrays two-by-two.
