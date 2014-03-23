@@ -8,7 +8,12 @@
 
 namespace Fcj;
 
-
+/**
+ * Utility stuff work working with tree-like data.
+ *
+ * @since 2014-03-23 New. treeize() & nodify().
+ * @author cadet.fabien@gmail.com
+ */
 class Tree
 {
     // todo: subarray($list, $select)
@@ -42,13 +47,12 @@ class Tree
             end($levels); unset($levels[ key($levels) ] );
         }
 
+        // The "root" nodes' children list, indexed by child name :
         $root = array();
-        $levels = array_fill_keys($levels, true);
 
         foreach($list AS $key => $path)
         {
-            //$nodes = self::nodify($path, $levels);
-            $nodes = array_intersect_key($path, $levels);
+            $nodes = self::nodify($path, $levels, $doSlice);
 
             // "STRAY" path are kept in $root[_stray] ; these are paths from which
             // we couldn't build a set of tree nodes.
@@ -57,33 +61,71 @@ class Tree
                 continue;
             }
 
+            // $nodes here is itself a standalone tree with only one path,
+            // we're here retrieving the root node $name and descendants $subtree
+            // for later insertion in $root below.
+            list($name, $subtree) = each($nodes);
+
+            // Create vertice in $root if not exists with an empty set of children :
+            if (!array_key_exists($name, $root))
+                $root[ $name ] = array();
+
             //
-            // Below we're looping over the nodes that compose that path,
-            // and populate the corresponding path from the $root of our tree.
-            //
+            // Append children nodes :
 
-            $t =& $root;
+            //$root[$name] += $subtree;
+            // ^ see '+' array operator : @link http://www.php.net/manual/en/language.operators.array.php
+            // existing $subtree keys (nodes) are kept, not overwritten -- silently.
 
-            foreach($nodes AS $lname => $name) {
-                if (! array_key_exists($name, $t))
-                    $t[ $name ] = array();
-                $t =& $t[ $name ];
-            }
+            // won't work either as it will re-index numerical indexes :
+            //$root[$name] = array_merge_recursive($root[$name], $subtree);
 
-            if ($doSlice) {
-                $path = array_diff_key($path, $nodes);
-                $n = count($path);
-                if (! $n)         $path = null;
-                else if ($n == 1) $path = reset($path );
-                // Else: path is a mapping of at least two elements.
-            }
-
-            // Note: This works since $t *is* a reference *to the last* (bottom-most)
-            // node in the tree (~= end of the path).
-            $t = $path;
-
-            unset( $t );
+            // this one will do :
+            $root[$name] = array_replace_recursive($root[$name], $subtree);
         }
+
+        return $root;
+    }
+
+    /** Utility function for the above @see treeize, whose purpose is to come up
+     * with a list of "nodes" from $path, given the tree level names $levels.
+     *
+     * @param array $path A keyed-n-tuple (i.e. a map), of which a subset of key-value pairs ($levels) represent a path in a tree.
+     * @param array $levels The tree level names (ordered set); these are keys in $path keyed-n-tuple.
+     * @param bool $doSlice Whether or not leafs are made up of whole $path, or if $levels shall be sliced off.
+     * @return array A tree with one path.
+     */
+    public static function nodify($path, array $levels, $doSlice=true)
+    {
+        // $nodes is the subset of $path whose keys are in $levels;
+        // $nodes here is actually the a set of key-value pairs where
+        // key is the tree level name, and value is the node value "at that level".
+        $levels = array_fill_keys($levels, true);
+        $nodes = array_intersect_key($path, $levels);
+
+        $root = array();
+
+        $t =& $root;
+
+        foreach($nodes AS $lname => $name) {
+            if (! array_key_exists($name, $t))
+                $t[ $name ] = array();
+            $t =& $t[ $name ];
+        }
+
+        if ($doSlice) {
+            $path = array_diff_key($path, $nodes);
+            $n = count($path);
+            if (! $n)         $path = null;
+            else if ($n == 1) $path = reset($path );
+            // Else: path is a mapping of at least two elements.
+        }
+
+        // Note: This works since $t *is* a reference *to the last* (bottom-most)
+        // node in the tree (~= end of the path).
+        $t = $path;
+
+        unset( $t );
 
         return $root;
     }
