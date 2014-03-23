@@ -77,7 +77,7 @@ class Table
      * Basically this calls @see extend() in turn, joining arrays two-by-two.
      *
      * @param array|\Traversable $arrays A list of arrays that are to be extended.
-     * @param bool $onKey
+     * @param bool|string $onKey
      * @param array $mapping
      * @return array|mixed
      */
