@@ -100,4 +100,37 @@ class Table
 
         return $left;
     }
+
+    public static function select($table, $what)
+    {
+        $clo = function($path, $what) {
+            $k = $m = array();
+            foreach($what AS $w => $keep) {
+                if (!array_key_exists($w, $path))
+                    continue;
+                else if ($keep)
+                    $k[ $w ] = $path[ $w ];
+                else
+                    $m[ $w ] = $path[ $w ];
+            }
+            $v = array_diff_key($path, $k, $m);
+            //return array($k, $m, $v);
+            //$o = $k + $m + $v;
+            $v = count($v)==1 ? reset($v) : $v;
+            $o = $k + array(implode('_', $m) => $v);
+            return $o;
+        };
+
+        $out = array();
+
+        foreach($table AS $key => $path) {
+            //list($k, $m, $v) =
+            $row = $clo ($path, $what);
+            //_pnb($row);
+            //_pnb($k, $m, $v);
+            $out[$key] = $row;
+        }
+
+        return $out;
+    }
 } 
