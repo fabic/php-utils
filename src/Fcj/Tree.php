@@ -129,4 +129,60 @@ class Tree
 
         return $root;
     }
+
+    /** Visit a tree in a depth-first manner.
+     *
+     * @param array|\Traversable $root
+     * @param callable $func
+     * @param int $level This is incremented as recursion occurs through going deeper in the tree.
+     * @return array The "results" == return values list of callable $func.
+     */
+    public static function visitDepthFirst(&$root, $func, $level=0)
+    {
+        assert(is_callable($func));
+        $retval = array();
+        foreach($root AS $name => &$children)
+        {
+            // Have $func visit "it", where "it" means "this" node, defined
+            // by the pair {$name, $children} :
+            $ret = $func($name, $children, $level);
+            // Collect result :
+            $retval[] = $ret;
+            // Skip non-foreach-able things :
+            if (!is_array($children) && !$children instanceOf \Traversable)
+                continue;
+            // Recursion :
+            $ret = self::visitDepthFirst($children, $func, $level+1);
+            // Collect result :
+            $retval = array_merge($retval, $ret);
+        }
+        return $retval;
+    }
+
+    /** Visit a given $level number of a tree, with callable $func.
+     *
+     * @param array|\Traversable $root A tree.
+     * @param int $level
+     * @param callable $func
+     * @param array $path Internal; the current path that was traversed to reach this node; passed to $func when we are at $level.
+     * @return array A set of results returned by $func.
+     */
+    public static function visitLevel(&$root, $level, $func, array $path = array())
+    {
+        assert(is_callable($func));
+        $retval = array();
+        // Until $level reaches 0, we're recursing so as to reach the level to be visited :
+        if ($level > 0) {
+            foreach($root AS $name => &$children) {
+                array_push($path, $name);
+                $ret = self::visitLevel($children, $level-1, $func, $path);
+                array_pop($path);
+                $retval = array_merge($retval, $ret);
+            }
+            return $retval;
+        }
+        // Else: Visit!
+        $ret = $func ($root, $path);
+        return array($ret);
+    }
 }
