@@ -69,6 +69,7 @@ class ValueMapper
      * @param mixed $source Typically an object or array, possibly a \Traversable (not tested).
      * @param object|array $target
      * @param array $ppaths An eventually empty list of property paths pairs (key=>value).
+     * @param array $filter
      * @param bool $magics Whether or not to consider the presence of PHP class magics __set / __call as implicit setters, defaults to false.
      * @return mixed $target gets returned.
      */
@@ -79,29 +80,35 @@ class ValueMapper
         $magics=true)
     {
         $accessor = PropertyAccess::createPropertyAccessor();
+
         // If no property path mappings list are provided, infer it :
         if (! $ppaths) {
             $s = self::getSettableProperties($source, $magics);
             // If $target is an empty array, a map of source key to null, as
             // these get infered as '[key]' ppath later in the below loop :
             if (is_array($target) && !$target)
-                $ppaths = array_fill_keys($s, null);
+                $t = $s;
             // Else the property paths list is the common settable properties
             // from $source & $target :
-            else {
+            else
                 $t = self::getSettableProperties($target, $magics);
-                $u = array_intersect($s, $t);
-                $u = array_diff($u, $filter);
-                $ppaths = array_combine($u, $u);
-            }
+            $u = array_intersect($s, $t);
+            $u = array_diff($u, $filter);
+            $ppaths = array_combine($u, $u);
             unset($s, $t, $u);
         }
+
+        $target_ia = is_array($target);
+        $source_ia = is_array($source);
+
         // Map data loop :
         foreach ($ppaths AS $from => $to) {
-            $to = $to ? : "[$from]";
+            $to   = $target_ia ? "[$to]"   : $to;
+            $from = $source_ia ? "[$from]" : $from;
             $value = $accessor->getValue($source, $from);
             $accessor->setValue($target, $to, $value);
         }
+
         return $target;
     }
 
