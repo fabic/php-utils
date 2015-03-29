@@ -1,39 +1,31 @@
 {
-    "name": "fcj/php-utils",
+    "name": "fabic/php-utils",
     "description": "fabic's PHP utilities",
     "type": "library",
-    "homepage": "https://fabic.github.com/",
-    "keywords": [ "PHP", "utilities" ],
+    "homepage": "https://fabic.net/",
+    "keywords": [ "PHP", "utilities", "algorithms" ],
     "license": [ "MIT" ],
 
     "authors": [
-        { "name": "Fabien CADET", "email": "cadet.fabien@gmail.com", "homepage": "http://RandomBinaryThoughts.com/" }
+        {
+          "name": "Fabien CADET",
+          "email": "cadet.fabien@gmail.com",
+          "homepage": "http://fabic.net/",
+          "role": "Developper"
+        }
     ],
 
     "version": "0.1.0-dev",
 
-    "minimum-stability": "stable",
-
     "autoload": {
-        "psr-0": {
-            "Fcj\\": "src/"
-        },
-        "classmap": [],
+        "psr-0": { "Fcj\\": "src/" },
         "files": ["src/utils.php"]
     },
 
-    "include-path": [
-        "lib/"
-    ],
-
+    "include-path": [ "lib/" ],
     "require": {
-        "php": ">=5.3.3"
-    },
-
-    "require-dev": {
-        "ccampbell/chromephp" : "dev-master",
-        "firephp/firephp-core" : "dev-master",
-        "apigen/apigen" : "dev-master"
+        "php": ">=5.3.18",
+        "symfony/property-access": ">=2.4.3"
     },
 
     "config": {
